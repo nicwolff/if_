@@ -1,8 +1,8 @@
 from setuptools import setup
 
 setup(
-    name='if_',
-    version='0.0.1',
+    name='if_optional',
+    version='0.0.2',
     description='Optional chaining for Python',
     author='Nic Wolff',
     author_email='nic@angel.net',
