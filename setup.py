@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='if_optional',
-    version='0.0.2',
+    version='0.0.3',
     description='Optional chaining for Python',
     author='Nic Wolff',
     author_email='nic@angel.net',

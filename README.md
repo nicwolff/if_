@@ -9,9 +9,11 @@ Optional chaining for Python
 ## Usage
 
 Call `if_()` with a Python expression, and chain attribute and item accessors on
-the return value, ending with `.then`. If the initial expression evaluates to
+the return value, ending with `._`. If the initial expression evaluates to
 `None`, so will the whole chain; if not, each accessor will run normally but if
 it fails the chain will return `None`.
+
+In a boolean or equality test you can leave off the `._`.
 
 ## Examples
 
@@ -25,23 +27,23 @@ it fails the chain will return `None`.
        ...:     'f': lambda x: x * 11,
        ...: }
 
-    In [3]: if_(None).anything.then is None
+    In [3]: if_(None).anything._ is None
     Out[3]: True
 
-    In [4]: if_(d).anything.then is None
+    In [4]: if_(d).anything._ is None
     Out[4]: True
 
-    In [5]: if_(d)['a'].then == 123
+    In [5]: if_(d)['a']._ == 123
     Out[5]: True
 
-    In [6]: if_(d)['c']['anything'].then is None
+    In [6]: if_(d)['c']['anything']._ is None
     Out[6]: True
 
-    In [7]: if_(d)['l'][1].then == 2
+    In [7]: if_(d)['l'][1]._ == 2
     Out[7]: True
 
-    In [8]: if_(d)['l'][5].then is None
+    In [8]: if_(d)['l'][5]._ is None
     Out[8]: True
 
-    In [9]: if_(d)['f'](4).then == 44
+    In [9]: if_(d)['f'](4) == 44
     Out[9]: True
