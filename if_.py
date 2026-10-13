@@ -1,3 +1,7 @@
+import math
+import operator
+
+
 def _subscriptable(value):
     return hasattr(type(value), '__getitem__') or (
         isinstance(value, type) and hasattr(value, '__class_getitem__'))
@@ -5,6 +9,24 @@ def _subscriptable(value):
 
 def _unwrap(value):
     return value._ if isinstance(value, if_) else value
+
+
+def _unary(op):
+    def method(self):
+        return op(self._)
+    return method
+
+
+def _binary(op):
+    def method(self, other):
+        return op(self._, _unwrap(other))
+    return method
+
+
+def _reflected(op):
+    def method(self, other):
+        return op(_unwrap(other), self._)
+    return method
 
 
 class if_:
@@ -41,17 +63,70 @@ class if_:
     def __repr__(self):
         return '<if_ with value %r>' % (self._,)
 
-    def __bool__(self):
-        return bool(self._)
+    def __format__(self, spec):
+        return format(self._, spec)
 
-    def __eq__(self, other):
-        return self._ == _unwrap(other)
+    def __round__(self, ndigits=None):
+        return round(self._, ndigits)
 
-    def __hash__(self):
-        return hash(self._)
+    def __pow__(self, other, mod=None):
+        return pow(self._, _unwrap(other), mod)
 
-    def __iter__(self):
-        return iter(self._)
+    def __rpow__(self, other):
+        return pow(_unwrap(other), self._)
 
-    def __contains__(self, item):
-        return item in self._
+    __str__ = _unary(str)
+    __bytes__ = _unary(bytes)
+    __bool__ = _unary(bool)
+    __hash__ = _unary(hash)
+    __len__ = _unary(len)
+    __iter__ = _unary(iter)
+    __reversed__ = _unary(reversed)
+    __contains__ = _binary(operator.contains)
+
+    __eq__ = _binary(operator.eq)
+    __ne__ = _binary(operator.ne)
+    __lt__ = _binary(operator.lt)
+    __le__ = _binary(operator.le)
+    __gt__ = _binary(operator.gt)
+    __ge__ = _binary(operator.ge)
+
+    __neg__ = _unary(operator.neg)
+    __pos__ = _unary(operator.pos)
+    __abs__ = _unary(abs)
+    __invert__ = _unary(operator.invert)
+
+    __int__ = _unary(int)
+    __float__ = _unary(float)
+    __complex__ = _unary(complex)
+    __index__ = _unary(operator.index)
+    __trunc__ = _unary(math.trunc)
+    __floor__ = _unary(math.floor)
+    __ceil__ = _unary(math.ceil)
+
+    __add__ = _binary(operator.add)
+    __radd__ = _reflected(operator.add)
+    __sub__ = _binary(operator.sub)
+    __rsub__ = _reflected(operator.sub)
+    __mul__ = _binary(operator.mul)
+    __rmul__ = _reflected(operator.mul)
+    __matmul__ = _binary(operator.matmul)
+    __rmatmul__ = _reflected(operator.matmul)
+    __truediv__ = _binary(operator.truediv)
+    __rtruediv__ = _reflected(operator.truediv)
+    __floordiv__ = _binary(operator.floordiv)
+    __rfloordiv__ = _reflected(operator.floordiv)
+    __mod__ = _binary(operator.mod)
+    __rmod__ = _reflected(operator.mod)
+    __divmod__ = _binary(divmod)
+    __rdivmod__ = _reflected(divmod)
+    __lshift__ = _binary(operator.lshift)
+    __rlshift__ = _reflected(operator.lshift)
+    __rshift__ = _binary(operator.rshift)
+    __rrshift__ = _reflected(operator.rshift)
+    __and__ = _binary(operator.and_)
+    __rand__ = _reflected(operator.and_)
+    __xor__ = _binary(operator.xor)
+    __rxor__ = _reflected(operator.xor)
+    __or__ = _binary(operator.or_)
+    __ror__ = _reflected(operator.or_)

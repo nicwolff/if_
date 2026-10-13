@@ -1,4 +1,5 @@
 import copy
+import math
 import pickle
 from unittest import TestCase
 
@@ -100,3 +101,63 @@ class UnitTests(TestCase):
         self.assertTrue(if_(d)['i'] == if_(123), 'Two wrappers compare by value')
         with self.assertRaises(TypeError, msg='Unhashable value makes the wrapper unhashable'):
             hash(if_(d)['l'])
+
+    def test_operators(self):
+        i = if_(d)['i']  # 123
+        self.assertTrue(i > 100 and i >= 123 and i < 200 and i <= 123, 'Ordering compares the value')
+        self.assertTrue(i != 124 and i != if_(124), 'Inequality compares the value')
+        self.assertEqual(i + 1, 124, 'Arithmetic uses the value')
+        self.assertEqual(1 + i, 124, 'Reflected arithmetic uses the value')
+        self.assertEqual(i + if_(1), 124, 'Arithmetic unwraps a wrapped operand')
+        self.assertEqual(i - 3, 120)
+        self.assertEqual(200 - i, 77)
+        self.assertEqual(i * 2, 246)
+        self.assertEqual(i / 2, 61.5)
+        self.assertEqual(i // 2, 61)
+        self.assertEqual(i % 10, 3)
+        self.assertEqual(divmod(i, 10), (12, 3))
+        self.assertEqual(divmod(1000, i), (8, 16))
+        self.assertEqual(i ** 2, 15129)
+        self.assertEqual(2 ** if_(3), 8)
+        self.assertEqual(pow(i, 2, 10), 9)
+        self.assertEqual(i << 1, 246)
+        self.assertEqual(i >> 1, 61)
+        self.assertEqual(i & 1, 1)
+        self.assertEqual(i | 4, 127)
+        self.assertEqual(i ^ 1, 122)
+        self.assertEqual(-i, -123)
+        self.assertEqual(+i, 123)
+        self.assertEqual(abs(if_(-5)), 5)
+        self.assertEqual(~i, -124)
+
+        n = i
+        n += 1
+        self.assertEqual(n, 124, 'In-place operators fall back to binary operators')
+
+    def test_conversions(self):
+        self.assertEqual(int(if_('7')), 7)
+        self.assertEqual(float(if_(d)['i']), 123.0)
+        self.assertEqual(complex(if_(1)), 1 + 0j)
+        self.assertEqual([10, 20, 30][if_(1)], 20, '__index__ allows use as an index')
+        self.assertEqual(round(if_(2.567), 1), 2.6)
+        self.assertEqual(round(if_(2.5)), 2)
+        self.assertEqual(math.trunc(if_(-2.5)), -2)
+        self.assertEqual(math.floor(if_(2.5)), 2)
+        self.assertEqual(math.ceil(if_(2.5)), 3)
+        self.assertEqual(str(if_(d)['i']), '123', 'str uses the value')
+        self.assertEqual(f'{if_(3.14159):.2f}', '3.14', 'format uses the value')
+        self.assertEqual(bytes(if_(b'ab')), b'ab')
+
+    def test_containers(self):
+        self.assertEqual(len(if_(d)['l']), 4, 'len uses the value')
+        self.assertEqual(list(reversed(if_(d)['l'])), [True, 3, 2, 1], 'reversed uses the value')
+        self.assertIn(if_(2), if_(d)['l'], 'Membership unwraps a wrapped item')
+
+    def test_failed_chain_operators_act_like_none(self):
+        with self.assertRaises(TypeError):
+            if_(d)['foo'] + 1
+        with self.assertRaises(TypeError):
+            if_(d)['foo'] > 1
+        with self.assertRaises(TypeError):
+            len(if_(d)['foo'])
+        self.assertEqual(str(if_(d)['foo']), 'None')
