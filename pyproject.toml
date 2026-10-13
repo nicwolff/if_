@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "if_optional"
-version = "0.0.3"
+version = "0.1.0"
 description = "Optional chaining for Python"
 readme = "README.md"
 license = "MIT"
