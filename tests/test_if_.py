@@ -93,3 +93,10 @@ class UnitTests(TestCase):
             if_(Buggy())['x']
         with self.assertRaises(TypeError, msg='Wrong key type for a list propagates'):
             if_(d)['l']['x']
+
+    def test_hash_and_eq(self):
+        self.assertEqual(hash(if_(d)['i']), hash(123), 'Hash matches the value\'s hash')
+        self.assertIn(if_(d)['i'], {123}, 'Wrapper can be found in a set of values')
+        self.assertTrue(if_(d)['i'] == if_(123), 'Two wrappers compare by value')
+        with self.assertRaises(TypeError, msg='Unhashable value makes the wrapper unhashable'):
+            hash(if_(d)['l'])

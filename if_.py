@@ -3,6 +3,10 @@ def _subscriptable(value):
         isinstance(value, type) and hasattr(value, '__class_getitem__'))
 
 
+def _unwrap(value):
+    return value._ if isinstance(value, if_) else value
+
+
 class if_:
     def __init__(self, maybe):
         self._ = maybe
@@ -41,7 +45,10 @@ class if_:
         return bool(self._)
 
     def __eq__(self, other):
-        return self._ == other
+        return self._ == _unwrap(other)
+
+    def __hash__(self):
+        return hash(self._)
 
     def __iter__(self):
         return iter(self._)
