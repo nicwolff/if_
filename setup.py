@@ -11,4 +11,5 @@ setup(
     long_description_content_type="text/markdown",
     url='http://github.com/nicwolff/if_',
     py_modules=['if_'],
+    python_requires='>=3.10',
 )

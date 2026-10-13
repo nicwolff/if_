@@ -67,3 +67,29 @@ class UnitTests(TestCase):
         self.assertEqual(copy.copy(if_(d)['l'])._, [1, 2, 3, True], 'copy works')
         self.assertEqual(copy.deepcopy(if_(d)['d'])._, d['d'], 'deepcopy works')
         self.assertEqual(pickle.loads(pickle.dumps(if_(d)['d']))._, d['d'], 'pickle works')
+
+    def test_non_chainable(self):
+        self.assertIsNone(if_(123)['x']._, 'Item of non-subscriptable value returns None')
+        self.assertIsNone(if_(123)()._, 'Call of non-callable value returns None')
+        self.assertEqual(if_(list)[int]._, list[int], 'Subscripting a generic class works')
+
+    def test_errors_propagate(self):
+        def buggy():
+            return None + 1
+
+        class Buggy:
+            @property
+            def prop(self):
+                return self.typo
+
+            def __getitem__(self, key):
+                raise TypeError('bug')
+
+        with self.assertRaises(TypeError, msg='TypeError inside a called function propagates'):
+            if_(buggy)()
+        with self.assertRaises(AttributeError, msg='AttributeError inside a property propagates'):
+            if_(Buggy()).prop
+        with self.assertRaises(TypeError, msg='TypeError inside __getitem__ propagates'):
+            if_(Buggy())['x']
+        with self.assertRaises(TypeError, msg='Wrong key type for a list propagates'):
+            if_(d)['l']['x']
