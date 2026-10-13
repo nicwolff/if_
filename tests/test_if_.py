@@ -48,3 +48,10 @@ class UnitTests(TestCase):
         self.assertFalse(if_(d)['foo'], 'Bool of chained fail works without _')
         self.assertTrue(if_(d)['i'] == 123, 'Dict item works without _')
         self.assertTrue(if_(d)['foo'] != 123, 'Failed dict item works without _')
+
+    def test_iteration(self):
+        self.assertEqual(list(if_(d)['l']), [1, 2, 3, True], 'Iteration yields the value\'s items')
+        self.assertIn(2, if_(d)['l'], 'Membership test uses the value')
+        self.assertNotIn(5, if_(d)['l'], 'Membership test uses the value')
+        with self.assertRaises(TypeError, msg='Iterating a failed chain raises like None'):
+            list(if_(d)['foo'])

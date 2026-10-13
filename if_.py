@@ -25,3 +25,9 @@ class if_:
 
     def __eq__(self, other):
         return self._ == other
+
+    def __iter__(self):
+        return iter(self._)
+
+    def __contains__(self, item):
+        return item in self._
