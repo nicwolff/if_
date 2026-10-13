@@ -18,7 +18,7 @@ class if_:
         return self.__next_if(lambda: self._(*a, **kw))
 
     def __repr__(self):
-        return '<if_ with value %s>' % self._
+        return '<if_ with value %r>' % (self._,)
 
     def __bool__(self):
         return bool(self._)

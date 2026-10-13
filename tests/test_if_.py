@@ -55,3 +55,8 @@ class UnitTests(TestCase):
         self.assertNotIn(5, if_(d)['l'], 'Membership test uses the value')
         with self.assertRaises(TypeError, msg='Iterating a failed chain raises like None'):
             list(if_(d)['foo'])
+
+    def test_repr(self):
+        self.assertEqual(repr(if_((1, 2))), '<if_ with value (1, 2)>', 'repr of tuple value works')
+        self.assertEqual(repr(if_('None')), "<if_ with value 'None'>", 'repr distinguishes str from None')
+        self.assertEqual(repr(if_(None)), '<if_ with value None>', 'repr of None works')
