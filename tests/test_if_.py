@@ -1,3 +1,5 @@
+import copy
+import pickle
 from unittest import TestCase
 
 from if_ import if_
@@ -60,3 +62,8 @@ class UnitTests(TestCase):
         self.assertEqual(repr(if_((1, 2))), '<if_ with value (1, 2)>', 'repr of tuple value works')
         self.assertEqual(repr(if_('None')), "<if_ with value 'None'>", 'repr distinguishes str from None')
         self.assertEqual(repr(if_(None)), '<if_ with value None>', 'repr of None works')
+
+    def test_copy_and_pickle(self):
+        self.assertEqual(copy.copy(if_(d)['l'])._, [1, 2, 3, True], 'copy works')
+        self.assertEqual(copy.deepcopy(if_(d)['d'])._, d['d'], 'deepcopy works')
+        self.assertEqual(pickle.loads(pickle.dumps(if_(d)['d']))._, d['d'], 'pickle works')

@@ -8,8 +8,10 @@ class if_:
         except (AttributeError, LookupError, TypeError):
             return if_(None)
 
-    def __getattr__(self, key, *a, **kw):
-        return self.__next_if(lambda: getattr(self._, key, *a, **kw))
+    def __getattr__(self, key):
+        if key == '_' or key.startswith('__') and key.endswith('__'):
+            raise AttributeError(key)
+        return self.__next_if(lambda: getattr(self._, key))
 
     def __getitem__(self, key):
         return self.__next_if(lambda: self._[key])
