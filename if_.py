@@ -1,3 +1,10 @@
+"""Optional chaining for Python.
+
+    if_(data)['user'].address.city._
+
+returns None if any step of the chain is missing, instead of raising.
+"""
+
 import math
 import operator
 
@@ -30,6 +37,19 @@ def _reflected(op):
 
 
 class if_:
+    """Wrap a value so that attribute, item and call access can be chained.
+
+    Each of those accesses returns a new if_. The chain continues with
+    if_(None) when a step is missing: the attribute does not exist on the
+    value, the key or index is not found, or the value is not subscriptable
+    or not callable. Errors raised inside a property, __getitem__ or called
+    function are not caught.
+
+    Get the result with ._. All other operators (comparison, arithmetic,
+    bool, len, iter, str, ...) act on the wrapped value directly and return
+    a plain result, so on a failed chain they behave as they would on None.
+    """
+
     def __init__(self, maybe):
         self._ = maybe
 
